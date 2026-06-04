@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Organic Skolkovo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,300&family=Nunito+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --teal:   #1a6068;
+      --terra:  #c8624a;
+      --sand:   #c9a46a;
+      --silver: #a8b8bc;
+      --dark:   #0a1e20;
+    }
+
+    html, body { height: 100%; overflow-x: hidden; }
+
+    /* ── BACKGROUND ─────────────────────────────────────── */
+    .bg {
+      position: fixed; inset: 0; z-index: 0;
+      background: var(--dark);
+    }
+    .bg-photo {
+      position: absolute; inset: 0;
+      background: url('bg.jpg') center 30% / cover no-repeat;
+      opacity: 0;
+      animation: bg-appear 2.5s ease 0.2s forwards;
+      transform: scale(1.04);
+      animation-fill-mode: forwards;
+    }
+    @keyframes bg-appear {
+      to { opacity: 0.28; transform: scale(1); }
+    }
+    /* deep vignette so text pops */
+    .bg-vignette {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 70% at 50% 40%, transparent 0%, rgba(8,22,24,0.7) 70%, rgba(8,22,24,0.97) 100%),
+        linear-gradient(to bottom, rgba(8,22,24,0.5) 0%, transparent 35%, transparent 60%, rgba(8,22,24,0.95) 100%);
+    }
+
+    /* ── PARTICLES ───────────────────────────────────────── */
+    #canvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+
+    /* ── PAGE WRAPPER ────────────────────────────────────── */
+    .page {
+      position: relative; z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 24px 160px;
+      text-align: center;
+    }
+
+    /* ── LOGO ────────────────────────────────────────────── */
+    .logo-wrap {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: rise 1.2s cubic-bezier(.22,1,.36,1) 0.6s forwards;
+    }
+    .logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      line-height: 1;
+      filter: drop-shadow(0 2px 40px rgba(26,96,104,0.35));
+    }
+    .logo-top {
+      display: flex;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      font-size: clamp(52px, 12vw, 118px);
+      letter-spacing: -0.01em;
+    }
+    .logo-top span { display: inline-block; }
+    .c1 { color: #1a6068; }
+    .c2 { color: #c8624a; }
+    .c3 { color: #c9a46a; }
+    .c4 { color: #a8b8bc; }
+
+    .logo-bottom {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: clamp(13px, 3vw, 29px);
+      letter-spacing: clamp(0.22em, 1.5vw, 0.42em);
+      color: #1a6068;
+      margin-top: -0.08em;
+      padding-left: 0.42em; /* compensate letter-spacing on last char */
+    }
+
+    /* stagger each letter */
+    .logo-top span {
+      opacity: 0;
+      transform: translateY(12px);
+      animation: letter-in 0.5s ease forwards;
+    }
+    .logo-top span:nth-child(1) { animation-delay: 0.7s; }
+    .logo-top span:nth-child(2) { animation-delay: 0.78s; }
+    .logo-top span:nth-child(3) { animation-delay: 0.86s; }
+    .logo-top span:nth-child(4) { animation-delay: 0.94s; }
+    .logo-top span:nth-child(5) { animation-delay: 1.02s; }
+    .logo-top span:nth-child(6) { animation-delay: 1.10s; }
+    .logo-top span:nth-child(7) { animation-delay: 1.18s; }
+
+    .logo-bottom {
+      opacity: 0;
+      animation: rise 0.7s ease 1.3s forwards;
+    }
+
+    @keyframes letter-in {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── THIN RULE ───────────────────────────────────────── */
+    .rule {
+      width: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,164,106,0.45), transparent);
+      margin: 38px auto 0;
+      animation: expand 1.2s ease 1.5s forwards;
+    }
+    @keyframes expand { to { width: min(340px, 65vw); } }
+
+    /* ── HEADLINE ────────────────────────────────────────── */
+    .headline {
+      margin-top: 30px;
+      opacity: 0;
+      animation: rise 0.9s ease 1.7s forwards;
+    }
+    .headline h1 {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 300;
+      font-size: clamp(0.95rem, 2.8vw, 1.5rem);
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.82);
+    }
+    .headline h1 em {
+      font-style: normal;
+      font-weight: 600;
+      color: #c9a46a;
+    }
+
+    .subline {
+      margin-top: 14px;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: clamp(0.7rem, 1.6vw, 0.82rem);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      opacity: 0;
+      animation: rise 0.9s ease 2s forwards;
+    }
+
+    /* ── PULSE DOTS ──────────────────────────────────────── */
+    .dots {
+      display: flex; gap: 10px;
+      margin-top: 38px;
+      opacity: 0;
+      animation: rise 0.8s ease 2.2s forwards;
+    }
+    .dots span {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+    .dots span:nth-child(1){ background: #1a6068; animation-delay: 0s;    }
+    .dots span:nth-child(2){ background: #c8624a; animation-delay: 0.3s;  }
+    .dots span:nth-child(3){ background: #c9a46a; animation-delay: 0.6s;  }
+    .dots span:nth-child(4){ background: #a8b8bc; animation-delay: 0.9s;  }
+    @keyframes pulse {
+      0%,100% { transform: scale(0.6); opacity: 0.3; }
+      50%      { transform: scale(1.4); opacity: 1;   }
+    }
+
+    /* ── STATS ───────────────────────────────────────────── */
+    .stats {
+      display: flex;
+      align-items: center;
+      gap: clamp(24px, 5vw, 64px);
+      margin-top: 54px;
+      flex-wrap: wrap;
+      justify-content: center;
+      opacity: 0;
+      animation: rise 0.9s ease 2.4s forwards;
+    }
+    .stat { text-align: center; }
+    .stat-n {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      color: #c9a46a;
+      line-height: 1;
+    }
+    .stat-l {
+      margin-top: 5px;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+    }
+    .vline {
+      width: 1px; height: 40px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* ── CONTACT FOOTER ──────────────────────────────────── */
+    .footer {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
+      width: 100%;
+      padding: 20px 24px 18px;
+      background: rgba(5, 15, 16, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      opacity: 0;
+      animation: rise 0.9s ease 2.8s forwards;
+    }
+    .footer-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+    }
+    .footer-emails {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px 36px;
+    }
+    .footer-emails a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: clamp(0.78rem, 2vw, 0.9rem);
+      letter-spacing: 0.04em;
+      transition: color 0.22s;
+    }
+    .footer-emails a:hover { color: #c9a46a; }
+    .footer-emails a svg { opacity: 0.4; flex-shrink: 0; transition: opacity 0.22s; }
+    .footer-emails a:hover svg { opacity: 0.8; }
+
+    .footer-dot {
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      align-self: center;
+    }
+
+    .footer-copy {
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.14);
+    }
+
+    /* ── SHARED ANIM ─────────────────────────────────────── */
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .vline, .footer-dot { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg">
+    <div class="bg-photo"></div>
+    <div class="bg-vignette"></div>
+  </div>
+
+  <canvas id="canvas"></canvas>
+
+  <div class="page">
+
+    <div class="logo-wrap">
+      <div class="logo">
+        <div class="logo-top">
+          <span class="c1">O</span><span class="c2">R</span><span class="c3">G</span><span class="c4">A</span><span class="c1">N</span><span class="c4">I</span><span class="c3">C</span>
+        </div>
+        <div class="logo-bottom">SKOLKOVO</div>
+      </div>
+    </div>
+
+    <div class="rule"></div>
+
+    <div class="headline">
+      <h1>Сайт <em>в разработке</em></h1>
+    </div>
+    <p class="subline">Скоро здесь будет что-то особенное</p>
+
+    <div class="dots">
+      <span></span><span></span><span></span><span></span>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-n">10+</div>
+        <div class="stat-l">лет опыта</div>
+      </div>
+      <div class="vline"></div>
+      <div class="stat">
+        <div class="stat-n">8</div>
+        <div class="stat-l">ресторанов</div>
+      </div>
+      <div class="vline"></div>
+      <div class="stat">
+        <div class="stat-n">Москва</div>
+        <div class="stat-l">Skolkovo</div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="footer">
+    <div class="footer-label">Связаться с нами</div>
+    <div class="footer-emails">
+      <a href="mailto:it@organicskolkovo.com">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg>
+        it@organicskolkovo.com
+      </a>
+      <div class="footer-dot"></div>
+      <a href="mailto:marketing@organicskolkovo.com">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg>
+        marketing@organicskolkovo.com
+      </a>
+    </div>
+    <div class="footer-copy">© 2025 Organic Skolkovo · Moscow, Russian Federation</div>
+  </footer>
+
+  <script>
+    // ── PARTICLES ────────────────────────────────────────────────────────────
+    const cvs = document.getElementById('canvas');
+    const ctx = cvs.getContext('2d');
+    const COLS = ['#1a6068','#c8624a','#c9a46a','#a8b8bc','#ffffff'];
+    let W, H, parts = [];
+
+    function resize(){ W = cvs.width = innerWidth; H = cvs.height = innerHeight; }
+    addEventListener('resize', resize); resize();
+
+    class P {
+      constructor(){ this.init(true); }
+      init(fresh){
+        this.x   = Math.random() * W;
+        this.y   = fresh ? Math.random() * H : H + 8;
+        this.r   = Math.random() * 1.8 + 0.4;
+        this.vx  = (Math.random() - 0.5) * 0.25;
+        this.vy  = -(Math.random() * 0.35 + 0.1);
+        this.a   = Math.random() * 0.3 + 0.04;
+        this.col = COLS[Math.floor(Math.random() * COLS.length)];
+        this.age = 0;
+        this.max = Math.random() * 280 + 180;
+        this.rot = Math.random() * Math.PI * 2;
+        this.rv  = (Math.random() - 0.5) * 0.012;
+        this.leaf= Math.random() > 0.5;
+      }
+      tick(){
+        this.x  += this.vx + Math.sin(this.age * 0.018) * 0.18;
+        this.y  += this.vy;
+        this.rot+= this.rv;
+        this.age++;
+        if(this.y < -8 || this.age > this.max) this.init(false);
+      }
+      draw(){
+        const fade = Math.min(1, (this.max - this.age) / 35);
+        ctx.save();
+        ctx.globalAlpha = this.a * fade;
+        ctx.fillStyle   = this.col;
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rot);
+        ctx.beginPath();
+        if(this.leaf) ctx.ellipse(0, 0, this.r, this.r * 2.4, 0, 0, Math.PI*2);
+        else          ctx.arc(0, 0, this.r, 0, Math.PI*2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    for(let i=0;i<80;i++) parts.push(new P());
+
+    (function loop(){
+      ctx.clearRect(0,0,W,H);
+      parts.forEach(p=>{ p.tick(); p.draw(); });
+      requestAnimationFrame(loop);
+    })();
+  </script>
+</body>
+</html>
